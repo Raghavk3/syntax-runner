@@ -47,6 +47,9 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Answer-1]",
                                 "ArrayList<String> list = new ArrayList<>();"
                         }
+                        {"[Answer-2]",
+                                "ArrayList<String> list = new ArrayList<>();"
+                        }
                 });
 
         // ── QUESTION 1 ──────────────────────────────────────────────────────
@@ -89,6 +92,9 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-12]", ";",         ",",        "."},
 
                         {"[Answer-1]",
+                                "HashMap<String, Integer> map = new HashMap<>();"
+                        }
+                        {"[Answer-2]",
                                 "HashMap<String, Integer> map = new HashMap<>();"
                         }
                 });
@@ -143,6 +149,9 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Answer-1]",
                                 "list.forEach(x -> System.out.println(x));"
                         }
+                        {"[Answer-2]",
+                                "list.forEach(x -> System.out.println(x));"
+                        }
                 });
 
         // ── QUESTION 3 ──────────────────────────────────────────────────────
@@ -187,6 +196,9 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Answer-1]",
                                 "try { ... } catch (Exception e) { ... }"
                         }
+                        {"[Answer-2]",
+                                "try { ... } catch (Exception e) { ... }"
+                        }
                 });
 
         // ── QUESTION 4 ──────────────────────────────────────────────────────
@@ -219,6 +231,9 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-7]", ";",                         ",",                       "."},
 
                         {"[Answer-1]",
+                                "throw new IllegalArgumentException(\"Invalid input\");"
+                        }
+                        {"[Answer-2]",
                                 "throw new IllegalArgumentException(\"Invalid input\");"
                         }
                 });
