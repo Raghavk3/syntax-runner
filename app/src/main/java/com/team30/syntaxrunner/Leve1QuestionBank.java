@@ -44,7 +44,7 @@ public class Level1QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "System.out.println(\"Hello World\");"
-                        }
+                        },
                         {"[Answer-2]",
                                 "System.out.println(\"Hello World\");"
                         }
@@ -85,7 +85,7 @@ public class Level1QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "System.out.println(\"Java is fun\");"
-                        }
+                        },
                         {"[Answer-2]",
                                 "System.out.println(\"Java is fun\");"
                         }
@@ -126,7 +126,7 @@ public class Level1QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "System.out.println(42);"
-                        }
+                        },
                         {"[Answer-2]",
                                 "System.out.println(42);"
                         }
@@ -171,7 +171,7 @@ public class Level1QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "System.out.println(\"Score: \" + score);"
-                        }
+                        },
                         {"[Answer-2]",
                                 "System.out.println(\"Score: \" + score);"
                         }
@@ -220,7 +220,7 @@ public class Level1QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "System.out.println(\"Hello\" + \" \" + \"World\");"
-                        }
+                        },
                         {"[Answer-2]",
                                 "System.out.println(\"Hello\" + \" \" + \"World\");"
                         }

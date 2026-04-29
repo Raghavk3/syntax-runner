@@ -40,7 +40,7 @@ public class Level5QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "public class Dog extends Animal { }"
-                        }
+                        },
                         {"[Answer-2]",
                                 "public class Dog extends Animal { }"
                         }
@@ -77,7 +77,7 @@ public class Level5QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "public class Circle implements Shape { }"
-                        }
+                        },
                         {"[Answer-2]",
                                 "public class Circle implements Shape { }"
                         }
@@ -116,7 +116,7 @@ public class Level5QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "@Override public void run() { }"
-                        }
+                        },
                         {"[Answer-2]",
                                 "@Override public void run() { }"
                         }
@@ -151,7 +151,7 @@ public class Level5QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "public abstract class Vehicle { }"
-                        }
+                        },
                         {"[Answer-2]",
                                 "public abstract class Vehicle { }"
                         }
@@ -184,7 +184,7 @@ public class Level5QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "super.toString()"
-                        }
+                        },
                         {"[Answer-2]",
                                 "super.toString()"
                         }

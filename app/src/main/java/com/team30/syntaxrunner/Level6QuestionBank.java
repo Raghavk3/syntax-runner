@@ -46,7 +46,7 @@ public class Level6QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "ArrayList<String> list = new ArrayList<>();"
-                        }
+                        },
                         {"[Answer-2]",
                                 "ArrayList<String> list = new ArrayList<>();"
                         }
@@ -93,7 +93,7 @@ public class Level6QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "HashMap<String, Integer> map = new HashMap<>();"
-                        }
+                        },
                         {"[Answer-2]",
                                 "HashMap<String, Integer> map = new HashMap<>();"
                         }
@@ -148,7 +148,7 @@ public class Level6QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "list.forEach(x -> System.out.println(x));"
-                        }
+                        },
                         {"[Answer-2]",
                                 "list.forEach(x -> System.out.println(x));"
                         }
@@ -195,7 +195,7 @@ public class Level6QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "try { ... } catch (Exception e) { ... }"
-                        }
+                        },
                         {"[Answer-2]",
                                 "try { ... } catch (Exception e) { ... }"
                         }
@@ -232,7 +232,7 @@ public class Level6QuestionBank extends QuestionBank
 
                         {"[Answer-1]",
                                 "throw new IllegalArgumentException(\"Invalid input\");"
-                        }
+                        },
                         {"[Answer-2]",
                                 "throw new IllegalArgumentException(\"Invalid input\");"
                         }
