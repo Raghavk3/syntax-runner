@@ -45,14 +45,7 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-10]", ";",          ",",         "."},
 
                         {"[Answer-1]",
-                                "ArrayList<String> list = new ArrayList<>();",
-                                "Array<String> list = new ArrayList<>();",
-                                "List<String> list = new ArrayList<>();"
-                        },
-                        {"[Answer-2]",
-                                "ArrayList<String> list = new ArrayList<>();",
-                                "ArrayList<Integer> list = new ArrayList<>();",
-                                "ArrayList<Double> list = new ArrayList<>();"
+                                "ArrayList<String> list = new ArrayList<>();"
                         }
                 });
 
@@ -96,14 +89,7 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-12]", ";",         ",",        "."},
 
                         {"[Answer-1]",
-                                "HashMap<String, Integer> map = new HashMap<>();",
-                                "Map<String, Integer> map = new HashMap<>();",
-                                "TreeMap<String, Integer> map = new HashMap<>();"
-                        },
-                        {"[Answer-2]",
-                                "HashMap<String, Integer> map = new HashMap<>();",
-                                "HashMap<Integer, String> map = new HashMap<>();",
-                                "HashMap<Double, String> map = new HashMap<>();"
+                                "HashMap<String, Integer> map = new HashMap<>();"
                         }
                 });
 
@@ -155,14 +141,7 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-16]", ";",        ",",      "."},
 
                         {"[Answer-1]",
-                                "list.forEach(x -> System.out.println(x));",
-                                "list.forEach(x => System.out.println(x));",
-                                "list.forEach(x -- System.out.println(x));"
-                        },
-                        {"[Answer-2]",
-                                "list.forEach(x -> System.out.println(x));",
-                                "list.forEach(i -> System.out.println(x));",
-                                "list.forEach(item -> System.out.println(x));"
+                                "list.forEach(x -> System.out.println(x));"
                         }
                 });
 
@@ -206,14 +185,7 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-12]", "}",          ")",       "]"},
 
                         {"[Answer-1]",
-                                "try { ... } catch (Exception e) { ... }",
-                                "try { ... } handle (Exception e) { ... }",
-                                "try { ... } except (Exception e) { ... }"
-                        },
-                        {"[Answer-2]",
-                                "try { ... } catch (Exception e) { ... }",
-                                "try { ... } catch (Error e) { ... }",
-                                "try { ... } catch (Throwable e) { ... }"
+                                "try { ... } catch (Exception e) { ... }"
                         }
                 });
 
@@ -247,14 +219,7 @@ public class Level6QuestionBank extends QuestionBank
                         {"[Options-2-7]", ";",                         ",",                       "."},
 
                         {"[Answer-1]",
-                                "throw new IllegalArgumentException(\"Invalid input\");",
-                                "throws new IllegalArgumentException(\"Invalid input\");",
-                                "Throw new IllegalArgumentException(\"Invalid input\");"
-                        },
-                        {"[Answer-2]",
-                                "throw new IllegalArgumentException(\"Invalid input\");",
-                                "throw new RuntimeException(\"Invalid input\");",
-                                "throw new Exception(\"Invalid input\");"
+                                "throw new IllegalArgumentException(\"Invalid input\");"
                         }
                 });
     }

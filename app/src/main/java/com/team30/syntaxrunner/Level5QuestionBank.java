@@ -39,14 +39,7 @@ public class Level5QuestionBank extends QuestionBank
                         {"[Options-2-7]", "}",          ")",         "]"},
 
                         {"[Answer-1]",
-                                "public class Dog extends Animal { }",
-                                "public class Dog implements Animal { }",
-                                "public class Dog inherits Animal { }"
-                        },
-                        {"[Answer-2]",
-                                "public class Dog extends Animal { }",
-                                "public class Dog extends Object { }",
-                                "public class Dog extends Runnable { }"
+                                "public class Dog extends Animal { }"
                         }
                 });
 
@@ -80,14 +73,7 @@ public class Level5QuestionBank extends QuestionBank
                         {"[Options-2-7]", "}",          ")",          "]"},
 
                         {"[Answer-1]",
-                                "public class Circle implements Shape { }",
-                                "public class Circle extends Shape { }",
-                                "public class Circle inherits Shape { }"
-                        },
-                        {"[Answer-2]",
-                                "public class Circle implements Shape { }",
-                                "private class Circle implements Shape { }",
-                                "protected class Circle implements Shape { }"
+                                "public class Circle implements Shape { }"
                         }
                 });
 
@@ -123,14 +109,7 @@ public class Level5QuestionBank extends QuestionBank
                         {"[Options-2-8]", "}",         ")",         "]"},
 
                         {"[Answer-1]",
-                                "@Override public void run() { }",
-                                "@Overide public void run() { }",
-                                "@override public void run() { }"
-                        },
-                        {"[Answer-2]",
-                                "@Override public void run() { }",
-                                "@Override private void run() { }",
-                                "@Override protected void run() { }"
+                                "@Override public void run() { }"
                         }
                 });
 
@@ -162,14 +141,7 @@ public class Level5QuestionBank extends QuestionBank
                         {"[Options-2-6]", "}",        ")",         "]"},
 
                         {"[Answer-1]",
-                                "public abstract class Vehicle { }",
-                                "public interface class Vehicle { }",
-                                "public static class Vehicle { }"
-                        },
-                        {"[Answer-2]",
-                                "public abstract class Vehicle { }",
-                                "public abstract class vehicle { }",
-                                "public abstract class VEHICLE { }"
+                                "public abstract class Vehicle { }"
                         }
                 });
 
@@ -199,14 +171,7 @@ public class Level5QuestionBank extends QuestionBank
                         {"[Options-2-5]", ")",         "}",        "]"},
 
                         {"[Answer-1]",
-                                "super.toString()",
-                                "this.toString()",
-                                "self.toString()"
-                        },
-                        {"[Answer-2]",
-                                "super.toString()",
-                                "super.tostring()",
-                                "super.ToString()"
+                                "super.toString()"
                         }
                 });
     }
