@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">Syntax Runner</string>
+    <string name="app_name">runtime.</string>
+    <string name="logo_text">rt.</string>
+    <string name="app_title">runtime.</string>
+    <string name="tagline">RUN. FOCUS. EXECUTE.</string>
+    <string name="start">START</string>
+    <string name="back">back</string>
+
+    <!-- Character Select -->
+    <string name="choose_runner">choose your runner</string>
+    <string name="select_avatar">select an avatar for the run</string>
+    <string name="confirm_selection">CONFIRM SELECTION</string>
+
+    <!-- Configure -->
+    <string name="configure_run">configure run</string>
+    <string name="set_params">set execution parameters</string>
+    <string name="module_select">MODULE.SELECT()</string>
+    <string name="level_set">LEVEL.SET()</string>
+    <string name="next_step">NEXT STEP</string>
+
+    <!-- Timer -->
+    <string name="select_focus_time">select focus time</string>
+    <string name="duration_set">duration.set()</string>
+    <string name="start_run">▶  START RUN</string>
+
+    <!-- Summary -->
+    <string name="run_complete">run complete.</string>
+    <string name="execution_summary">execution summary</string>
+    <string name="play_again">PLAY AGAIN</string>
 </resources>
