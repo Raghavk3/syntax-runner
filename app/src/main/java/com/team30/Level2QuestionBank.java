@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Question bank for Level 2 — Variable Declarations.
  * Focuses on data types, assignment operators, literals, and terminators.
