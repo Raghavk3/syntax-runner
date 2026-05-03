@@ -1,9 +1,9 @@
-import java.util.List;
+package com.team30.syntaxrunner;
 
-/**
- * A simple test class for checking whether QuestionBank, Question,
- * and SubQuestion work correctly together.
- */
+/*
+* Currently not in use
+*/
+
 public class Main
 {
 
