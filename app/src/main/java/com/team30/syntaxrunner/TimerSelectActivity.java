@@ -123,16 +123,11 @@ public class TimerSelectActivity extends AppCompatActivity {
         }
 
         btnStartRun.setOnClickListener(v -> {
-            Intent intent = new Intent(TimerSelectActivity.this, SummaryActivity.class);
+            Intent intent = new Intent(TimerSelectActivity.this, GameActivity.class);
             intent.putExtra("characterId", characterId);
             intent.putExtra("topic", topic);
             intent.putExtra("difficulty", difficulty);
             intent.putExtra("durationMinutes", selectedDuration);
-            // These would normally come from gameplay - placeholder values
-            intent.putExtra("score", 850);
-            intent.putExtra("accuracy", 85);
-            intent.putExtra("correct", 17);
-            intent.putExtra("missed", 3);
             startActivity(intent);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         });
