@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Question bank for Level 1 — Basic Output.
  * Focuses on System.out.println syntax, semicolons, and print chain keywords.
