@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 public class BankValidatorRunner {
     public static void main(String[] args) {
         BankValidator.validate("Level1", new Level1QuestionBank());
