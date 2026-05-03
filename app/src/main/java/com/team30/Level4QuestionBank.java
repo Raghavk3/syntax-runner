@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Question bank for Level 4 — Methods and Classes.
  * Focuses on method signatures, return types, access modifiers, and class declarations.
