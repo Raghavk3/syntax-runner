@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 import java.util.HashMap;
 import java.util.Random;
 
