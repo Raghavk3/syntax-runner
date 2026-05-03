@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Question bank for Level 5 — Object-Oriented Features.
  * Focuses on inheritance (extends), interfaces (implements),
