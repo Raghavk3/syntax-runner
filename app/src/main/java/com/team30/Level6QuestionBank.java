@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Question bank for Level 6 — Advanced Constructs.
  * Focuses on generics (<T>), lambda expressions (->),
