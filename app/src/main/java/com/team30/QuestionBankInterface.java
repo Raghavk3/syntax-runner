@@ -1,3 +1,5 @@
+package com.team30.syntaxrunner;
+
 /**
  * Defines the basic structure of a QuestionBank in Syntax Runner.
  * A QuestionBank can randomly choose and return one stored question set.
