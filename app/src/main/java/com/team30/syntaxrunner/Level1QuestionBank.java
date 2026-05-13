@@ -22,7 +22,7 @@ public class Level1QuestionBank extends QuestionBank
                                 "// Fix the incorrect token in the print statement"
                         },
                         {"[Question-1]", "System", ".", "in",  ".", "println", "(", "\"Hello World\"", ")", ";"},
-                        {"[Question-2]", "System", ".", "out", ".", "print",   "(", "\"Hello World\"", ")", ";"},
+                        {"[Question-2]", "System", ".", "out", ".", "printio", "(", "\"Hello World\"", ")", ";"},
 
                         {"[Options-1-1]", "System",         "Sys",         "system"},
                         {"[Options-1-2]", ".",               "::",          ","},

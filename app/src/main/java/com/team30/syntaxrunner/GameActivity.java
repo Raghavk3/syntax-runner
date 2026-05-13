@@ -15,15 +15,21 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.flexbox.FlexboxLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -42,10 +48,9 @@ public class GameActivity extends AppCompatActivity {
     private TextView questionTypeLabel;
     private TextView questionTimerPill;
     private TextView annotationText;
-    private LinearLayout codeTokenRow;
+    private FlexboxLayout codeTokenRow;
     private TextView optionsHintLabel;
-    private View optionsScrollView;
-    private LinearLayout optionsContainer;
+    private GridLayout optionsContainer;
     private Button submitBtn;
 
     // ── Game state ────────────────────────────────────────────────────────────
@@ -63,25 +68,33 @@ public class GameActivity extends AppCompatActivity {
     // ── Question state ────────────────────────────────────────────────────────
     private Question currentQuestion;
     private SubQuestion currentSubQuestion;
-    private int errorTokenIndex = -1;
-    private String correctOption = "";
-    private List<String> shuffledOptions = new ArrayList<>();
-    private int selectedBugTokenIndex = -1;
-    private TextView selectedBugChip = null;
+    private List<String> currentMergedTokens = null;
+    private boolean isTwoErrorQuestion = false;
+    private int errorToken1Index = -1;
+    private int errorToken2Index = -1;
+    private String correctOption1 = "";
+    private String correctOption2 = "";
+    private List<String> shuffledOptions1 = new ArrayList<>();
+    private List<String> shuffledOptions2 = new ArrayList<>();
+    private int bugFixStep = 0;          // 0=selecting tokens  1=fixing bug1  2=fixing bug2
+    private int selectedBugToken1Index = -1;
+    private int selectedBugToken2Index = -1;
+    private TextView selectedBugChip1 = null;
+    private TextView selectedBugChip2 = null;
     private String selectedFix = "";
     private TextView selectedFixChip = null;
     private boolean wrongCountedThisQuestion = false;
-    private List<String[][]> allQuestions = new ArrayList<>();
+    private String currentContext = "";
+    private List<QuestionSlot> allQuestions = new ArrayList<>();
     private int questionIndex = 0;
 
     // ── System ────────────────────────────────────────────────────────────────
     private final Handler gameHandler = new Handler(Looper.getMainLooper());
-    private DifficultyManager difficultyManager;
     private ValueAnimator charBobAnim;
     private boolean gameLoopRunning = false;
 
     // ── Dimensions ────────────────────────────────────────────────────────────
-    private int screenWidth, screenHeight;
+    private int screenWidth;
     private float density;
     private float groundY;
     private int charSizePx;
@@ -91,8 +104,34 @@ public class GameActivity extends AppCompatActivity {
     // ── Intents ───────────────────────────────────────────────────────────────
     private int durationMinutes;
     private int runnerDrawable;
-    private String difficulty, topic, characterId;
+    private String difficulty, characterId;
     private String avatarColor;
+
+    // ── Constants ─────────────────────────────────────────────────────────────
+    private static final int FIRST_OBSTACLE_ENCOUNTER_MS = 2500;
+
+    // ── Inner: question slot ──────────────────────────────────────────────────
+    private static class QuestionSlot {
+        final Question question;
+        final boolean isTwoError;
+        final SubQuestion sq1, sq2;
+        final int err1, err2;
+        final SubQuestion singleVariant;
+
+        static QuestionSlot twoError(Question q, SubQuestion s1, SubQuestion s2, int e1, int e2) {
+            return new QuestionSlot(q, true, s1, s2, e1, e2, null);
+        }
+
+        static QuestionSlot oneError(Question q, SubQuestion sv) {
+            return new QuestionSlot(q, false, null, null, -1, -1, sv);
+        }
+
+        private QuestionSlot(Question q, boolean two, SubQuestion s1, SubQuestion s2,
+                             int e1, int e2, SubQuestion sv) {
+            question = q; isTwoError = two; sq1 = s1; sq2 = s2;
+            err1 = e1; err2 = e2; singleVariant = sv;
+        }
+    }
 
     // ── Inner: obstacle data ──────────────────────────────────────────────────
     private static class ObstacleInfo {
@@ -117,7 +156,7 @@ public class GameActivity extends AppCompatActivity {
         durationMinutes = getIntent().getIntExtra("durationMinutes", 5);
         runnerDrawable = getIntent().getIntExtra("runner_drawable", R.drawable.ic_runner_astronaut);
         difficulty = getIntent().getStringExtra("difficulty");
-        topic = getIntent().getStringExtra("topic");
+        String topic = getIntent().getStringExtra("topic");
         characterId = getIntent().getStringExtra("characterId");
         if (difficulty == null) difficulty = "EASY";
         if (characterId == null) characterId = "astronaut";
@@ -164,7 +203,6 @@ public class GameActivity extends AppCompatActivity {
         annotationText = findViewById(R.id.annotationText);
         codeTokenRow = findViewById(R.id.codeTokenRow);
         optionsHintLabel = findViewById(R.id.optionsHintLabel);
-        optionsScrollView = findViewById(R.id.optionsScrollView);
         optionsContainer = findViewById(R.id.optionsContainer);
         submitBtn = findViewById(R.id.submitBtn);
     }
@@ -176,7 +214,7 @@ public class GameActivity extends AppCompatActivity {
             case "MEDIUM": diffEnum = Difficulty.MEDIUM; break;
             default:       diffEnum = Difficulty.EASY;   break;
         }
-        difficultyManager = new DifficultyManager(diffEnum);
+        DifficultyManager difficultyManager = new DifficultyManager(diffEnum);
     }
 
     private void buildShuffledQuestionList() {
@@ -189,11 +227,43 @@ public class GameActivity extends AppCompatActivity {
             new Level5QuestionBank(),
             new Level6QuestionBank()
         };
+        Random rng = new Random();
         for (QuestionBank bank : banks) {
-            allQuestions.addAll(bank.getAllQuestions());
+            for (String[][] raw : bank.getAllQuestions()) {
+                if (raw == null) continue;
+                Question q = new Question(raw);
+                SubQuestion sq1 = q.getSubQuestion(1);
+                SubQuestion sq2 = q.getSubQuestion(2);
+                if (sq1 == null && sq2 == null) continue;
+
+                if (sq1 == null) { allQuestions.add(QuestionSlot.oneError(q, sq2)); continue; }
+                if (sq2 == null) { allQuestions.add(QuestionSlot.oneError(q, sq1)); continue; }
+
+                int e1 = findErrorTokenIndex(sq1);
+                int e2 = findErrorTokenIndex(sq2);
+                boolean realErr1 = isRealError(sq1, e1);
+                boolean realErr2 = isRealError(sq2, e2);
+                boolean twoError = realErr1 && realErr2 && (e1 != e2);
+
+                if (twoError) {
+                    allQuestions.add(QuestionSlot.twoError(q, sq1, sq2, e1, e2));
+                } else {
+                    SubQuestion sv = (!realErr1 && realErr2) ? sq2
+                                   : (realErr1 && !realErr2) ? sq1
+                                   : (rng.nextBoolean() ? sq1 : sq2);
+                    allQuestions.add(QuestionSlot.oneError(q, sv));
+                }
+            }
         }
         Collections.shuffle(allQuestions);
         questionIndex = 0;
+    }
+
+    private boolean isRealError(SubQuestion sq, int idx) {
+        if (idx < 0 || idx >= sq.getTokens().size()) return false;
+        List<String> opts = sq.getTokenOptions(idx);
+        return opts != null && !opts.isEmpty()
+            && !sq.getTokens().get(idx).trim().equals(opts.get(0).trim());
     }
 
     private void setupCharacter() {
@@ -214,9 +284,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void onLayoutReady() {
         screenWidth = gridView.getWidth();
-        screenHeight = gridView.getHeight();
+        int screenHeight = gridView.getHeight();
         groundY = gridView.getGroundY();
-        obstacleSpeedPx = screenWidth * 0.05f;  // 2.5x the original 0.02
+        obstacleSpeedPx = screenWidth * 0.05f;
+
+        int travelTicks = Math.round((screenWidth * 0.95f) / obstacleSpeedPx);
+        int firstSpawnTick = Math.max(0, FIRST_OBSTACLE_ENCOUNTER_MS / 100 - travelTicks);
+        lastObstacleDist = firstSpawnTick - 21;
 
         FrameLayout.LayoutParams glp = (FrameLayout.LayoutParams) groundLine.getLayoutParams();
         glp.topMargin = (int) groundY;
@@ -254,7 +328,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void gameTick() {
-        // Main timer ALWAYS ticks — never pauses when question is showing
         timeLeft = Math.max(0, timeLeft - 1);
         updateTimerDisplay();
         if (timeLeft <= 0) {
@@ -266,7 +339,6 @@ public class GameActivity extends AppCompatActivity {
             distanceCount++;
             gridView.setScrollOffset(distanceCount * 3);
 
-            // Tighter gap + higher probability for more active feel
             if (distanceCount - lastObstacleDist > 20 && Math.random() < 0.6) {
                 spawnObstacle();
                 lastObstacleDist = distanceCount;
@@ -295,7 +367,6 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         } else {
-            // Per-question countdown — always ticks, no guard
             qTimer = Math.max(0, qTimer - 1);
             updateQuestionTimer();
             if (qTimer <= 0) {
@@ -344,10 +415,6 @@ public class GameActivity extends AppCompatActivity {
         if (showQuestion) return;
         showQuestion = true;
         qTimer = 180;
-        selectedBugTokenIndex = -1;
-        selectedBugChip = null;
-        selectedFix = "";
-        selectedFixChip = null;
         wrongCountedThisQuestion = false;
 
         if (charBobAnim != null) charBobAnim.cancel();
@@ -361,50 +428,39 @@ public class GameActivity extends AppCompatActivity {
             endGame();
             return;
         }
-        String[][] raw = allQuestions.get(questionIndex++);
-        if (raw == null) {
-            resumeRunner();
-            return;
-        }
 
-        currentQuestion = new Question(raw);
-        List<SubQuestion> subs = currentQuestion.getAllSubQuestions();
-        if (subs.isEmpty()) {
-            resumeRunner();
-            return;
-        }
+        QuestionSlot slot = allQuestions.get(questionIndex++);
+        currentQuestion = slot.question;
+        isTwoErrorQuestion = slot.isTwoError;
 
-        currentSubQuestion = subs.get((int)(Math.random() * subs.size()));
-        errorTokenIndex = findErrorTokenIndex(currentSubQuestion);
-        if (errorTokenIndex < 0) errorTokenIndex = 0;
+        if (slot.isTwoError) {
+            currentSubQuestion = slot.sq1;
+            errorToken1Index = slot.err1;
+            errorToken2Index = slot.err2;
 
-        List<String> opts = currentSubQuestion.getTokenOptions(errorTokenIndex);
-        if (opts == null || opts.isEmpty()) {
-            resumeRunner();
-            return;
-        }
+            List<String> merged = new ArrayList<>(slot.sq1.getTokens());
+            merged.set(slot.err2, slot.sq2.getTokens().get(slot.err2));
+            currentMergedTokens = merged;
 
-        correctOption = opts.get(0);
+            correctOption1 = slot.sq1.getTokenOptions(slot.err1).get(0);
+            correctOption2 = slot.sq2.getTokenOptions(slot.err2).get(0);
+            shuffledOptions1 = build4Options(slot.sq1, slot.err1);
+            shuffledOptions2 = build4Options(slot.sq2, slot.err2);
+        } else {
+            currentSubQuestion = slot.singleVariant;
+            errorToken1Index = findErrorTokenIndex(currentSubQuestion);
+            if (errorToken1Index < 0) errorToken1Index = 0;
+            errorToken2Index = -1;
 
-        // Build up to 4 options: 1 correct + up to 3 wrong
-        shuffledOptions = new ArrayList<>();
-        shuffledOptions.add(correctOption);
-        for (int i = 1; i < opts.size(); i++) {
-            if (!opts.get(i).isEmpty()) shuffledOptions.add(opts.get(i));
-        }
-        // Borrow extra wrong options from other token positions if needed
-        if (shuffledOptions.size() < 4) {
-            List<String> tokens = currentSubQuestion.getTokens();
-            for (int ti = 0; ti < tokens.size() && shuffledOptions.size() < 4; ti++) {
-                if (ti == errorTokenIndex) continue;
-                List<String> adj = currentSubQuestion.getTokenOptions(ti);
-                for (int j = 1; j < adj.size() && shuffledOptions.size() < 4; j++) {
-                    String wo = adj.get(j).trim();
-                    if (!wo.isEmpty() && !shuffledOptions.contains(wo)) shuffledOptions.add(wo);
-                }
+            List<String> opts = currentSubQuestion.getTokenOptions(errorToken1Index);
+            if (opts == null || opts.isEmpty()) {
+                resumeRunner();
+                return;
             }
+            correctOption1 = opts.get(0);
+            shuffledOptions1 = build4Options(currentSubQuestion, errorToken1Index);
+            currentMergedTokens = null;
         }
-        Collections.shuffle(shuffledOptions);
 
         renderQuestionOverlay();
     }
@@ -424,51 +480,77 @@ public class GameActivity extends AppCompatActivity {
         return 0;
     }
 
+    private List<String> build4Options(SubQuestion sq, int errIdx) {
+        List<String> opts = sq.getTokenOptions(errIdx);
+        List<String> result = new ArrayList<>();
+        result.add(opts.get(0));
+        for (int i = 1; i < opts.size(); i++) {
+            if (!opts.get(i).isEmpty()) result.add(opts.get(i));
+        }
+        if (result.size() < 4) {
+            List<String> tokens = sq.getTokens();
+            for (int ti = 0; ti < tokens.size() && result.size() < 4; ti++) {
+                if (ti == errIdx) continue;
+                List<String> adj = sq.getTokenOptions(ti);
+                if (adj == null) continue;
+                for (int j = 1; j < adj.size() && result.size() < 4; j++) {
+                    String wo = adj.get(j).trim();
+                    if (!wo.isEmpty() && !result.contains(wo)) result.add(wo);
+                }
+            }
+        }
+        Collections.shuffle(result);
+        return result;
+    }
+
     // ── Find-the-Bug UI ────────────────────────────────────────────────────────
 
     private void renderQuestionOverlay() {
-        // Annotation: code context line + find-the-bug instruction
         List<String> anns = currentQuestion.getAnnotationLines();
-        String context = "";
+        currentContext = "";
         for (String a : anns) {
-            if (a.startsWith("//")) { context = a; break; }
+            if (a.startsWith("//")) { currentContext = a; break; }
         }
-        annotationText.setText(context.isEmpty() ? "→ find 1 error" : context + "\n→ find 1 error");
+        String errorHint = isTwoErrorQuestion ? "→ find 2 errors" : "→ find 1 error";
+        annotationText.setText(currentContext.isEmpty() ? errorHint : currentContext + "\n" + errorHint);
 
-        // Header type label — neutral state until bug token is tapped
         questionTypeLabel.setText("● BUG_SCAN");
         questionTypeLabel.setTextColor(Color.parseColor("#FF8B949E"));
 
-        // Code block: ALL tokens rendered as tappable chips
+        List<String> displayTokens = (isTwoErrorQuestion && currentMergedTokens != null)
+            ? currentMergedTokens : currentSubQuestion.getTokens();
+
         codeTokenRow.removeAllViews();
-        List<String> tokens = currentSubQuestion.getTokens();
-        for (int i = 0; i < tokens.size(); i++) {
+        for (int i = 0; i < displayTokens.size(); i++) {
             final int idx = i;
             TextView tv = new TextView(this);
-            tv.setText(tokens.get(i));
+            tv.setText(displayTokens.get(i));
             tv.setTypeface(Typeface.MONOSPACE);
-            tv.setTextSize(13f);
+            tv.setTextSize(11f);
             tv.setTextColor(Color.parseColor("#FFC9D1D9"));
             tv.setGravity(Gravity.CENTER);
-            tv.setPadding(dp(8), dp(6), dp(8), dp(6));
+            tv.setPadding(dp(7), dp(5), dp(7), dp(5));
             tv.setBackground(makeTokenDefault());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            FlexboxLayout.LayoutParams lp = new FlexboxLayout.LayoutParams(
+                    FlexboxLayout.LayoutParams.WRAP_CONTENT,
+                    FlexboxLayout.LayoutParams.WRAP_CONTENT);
             lp.setMargins(dp(2), dp(2), dp(2), dp(2));
             tv.setLayoutParams(lp);
             tv.setOnClickListener(v -> handleBugTokenTap(idx, tv));
             codeTokenRow.addView(tv);
         }
 
-        // Fix options area hidden until a bug token is selected
         optionsHintLabel.setVisibility(View.GONE);
-        optionsScrollView.setVisibility(View.GONE);
+        optionsContainer.setVisibility(View.GONE);
         optionsContainer.removeAllViews();
-
         submitBtn.setVisibility(View.GONE);
         submitBtn.setEnabled(true);
         submitBtn.setOnClickListener(v -> evaluateAndSubmit());
+
+        bugFixStep = 0;
+        selectedBugToken1Index = -1; selectedBugChip1 = null;
+        selectedBugToken2Index = -1; selectedBugChip2 = null;
+        selectedFix = ""; selectedFixChip = null;
 
         questionOverlayOuter.setAlpha(0f);
         questionOverlayOuter.setVisibility(View.VISIBLE);
@@ -482,65 +564,87 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void handleBugTokenTap(int tokenIdx, TextView chip) {
-        // Deselect previously highlighted bug token
-        if (selectedBugChip != null && selectedBugChip != chip) {
-            selectedBugChip.setBackground(makeTokenDefault());
-            selectedBugChip.setTextColor(Color.parseColor("#FFC9D1D9"));
+        if (bugFixStep > 0) return;
+
+        if (!isTwoErrorQuestion) {
+            if (selectedBugChip1 != null && selectedBugChip1 != chip) {
+                selectedBugChip1.setBackground(makeTokenDefault());
+                selectedBugChip1.setTextColor(Color.parseColor("#FFC9D1D9"));
+            }
+            selectedBugToken1Index = tokenIdx;
+            selectedBugChip1 = chip;
+            chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
+            chip.setTextColor(Color.WHITE);
+            selectedFix = "";
+            if (selectedFixChip != null) {
+                selectedFixChip.setBackground(makeChipDefault());
+                selectedFixChip.setTextColor(Color.parseColor("#FFC9D1D9"));
+                selectedFixChip = null;
+            }
+            submitBtn.setVisibility(View.GONE);
+            showFixOptions(shuffledOptions1);
+        } else {
+            if (selectedBugChip1 == null) {
+                selectedBugToken1Index = tokenIdx;
+                selectedBugChip1 = chip;
+                chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
+                chip.setTextColor(Color.WHITE);
+                String hint = currentContext.isEmpty() ? "→ tap 1 more error" : currentContext + "\n→ tap 1 more error";
+                annotationText.setText(hint);
+            } else if (chip == selectedBugChip1) {
+                chip.setBackground(makeTokenDefault());
+                chip.setTextColor(Color.parseColor("#FFC9D1D9"));
+                selectedBugToken1Index = -1;
+                selectedBugChip1 = null;
+                String hint = currentContext.isEmpty() ? "→ find 2 errors" : currentContext + "\n→ find 2 errors";
+                annotationText.setText(hint);
+            } else if (selectedBugChip2 == null) {
+                selectedBugToken2Index = tokenIdx;
+                selectedBugChip2 = chip;
+                chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
+                chip.setTextColor(Color.WHITE);
+                String hint = currentContext.isEmpty() ? "fix error 1 of 2" : currentContext + "\nfix error 1 of 2";
+                annotationText.setText(hint);
+                showFixOptions(shuffledOptions1);
+            }
         }
-
-        selectedBugTokenIndex = tokenIdx;
-        selectedBugChip = chip;
-
-        // Highlight tapped token in red
-        chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
-        chip.setTextColor(Color.WHITE);
-
-        // Reset any fix selection made previously
-        selectedFix = "";
-        if (selectedFixChip != null) {
-            selectedFixChip.setBackground(makeChipDefault());
-            selectedFixChip.setTextColor(Color.parseColor("#FFC9D1D9"));
-            selectedFixChip = null;
-        }
-        submitBtn.setVisibility(View.GONE);
-
-        showFixOptions();
     }
 
-    private void showFixOptions() {
-        // Header flips to BUG_DETECTED in red
+    private void showFixOptions(List<String> options) {
         questionTypeLabel.setText("● BUG_DETECTED");
         questionTypeLabel.setTextColor(Color.parseColor("#FFFF4444"));
-
         optionsHintLabel.setVisibility(View.VISIBLE);
-
-        // Rebuild fix option chips
         optionsContainer.removeAllViews();
-        for (String opt : shuffledOptions) {
+
+        for (int k = 0; k < options.size(); k++) {
+            final String opt = options.get(k);
             TextView chip = new TextView(this);
             chip.setText(opt);
             chip.setTypeface(Typeface.MONOSPACE);
-            chip.setTextSize(13f);
+            chip.setTextSize(12f);
             chip.setTextColor(Color.parseColor("#FFC9D1D9"));
             chip.setGravity(Gravity.CENTER);
-            chip.setPadding(dp(14), dp(9), dp(14), dp(9));
+            chip.setPadding(dp(10), dp(8), dp(10), dp(8));
             chip.setBackground(makeChipDefault());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, dp(8), 0);
+
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams(
+                    GridLayout.spec(k / 2, 1f),
+                    GridLayout.spec(k % 2, 1f));
+            lp.width = 0;
+            lp.height = GridLayout.LayoutParams.WRAP_CONTENT;
+            lp.setMargins(dp(4), dp(4), dp(4), dp(4));
             chip.setLayoutParams(lp);
             chip.setOnClickListener(v -> handleFixTap(opt, chip));
             optionsContainer.addView(chip);
         }
 
-        optionsScrollView.setVisibility(View.VISIBLE);
+        optionsContainer.setVisibility(View.VISIBLE);
+        bugFixStep = 1;
     }
 
     private void handleFixTap(String fix, TextView chip) {
         if (!chip.isEnabled()) return;
 
-        // Deselect previous fix chip
         if (selectedFixChip != null && selectedFixChip != chip) {
             selectedFixChip.setBackground(makeChipDefault());
             selectedFixChip.setTextColor(Color.parseColor("#FFC9D1D9"));
@@ -549,7 +653,6 @@ public class GameActivity extends AppCompatActivity {
         selectedFix = fix;
         selectedFixChip = chip;
 
-        // Highlight selected fix chip purple
         chip.setBackground(makeRoundRect(dp(8), Color.parseColor("#336C63FF"), Color.parseColor("#FF6C63FF"), dp(2)));
         chip.setTextColor(Color.WHITE);
 
@@ -557,53 +660,139 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void evaluateAndSubmit() {
-        if (selectedFix.isEmpty() || selectedBugTokenIndex < 0) return;
-
-        boolean bugCorrect = (selectedBugTokenIndex == errorTokenIndex);
-        boolean fixCorrect = correctOption.trim().equals(selectedFix.trim());
-        boolean isCorrect = bugCorrect && fixCorrect;
-
+        if (selectedFix.isEmpty()) return;
         submitBtn.setEnabled(false);
 
-        if (isCorrect) {
-            correctAnswers++;
-            correctCount.setText(String.valueOf(correctAnswers));
+        if (bugFixStep == 1) {
+            boolean bugCorrect = (selectedBugToken1Index == errorToken1Index
+                    || selectedBugToken2Index == errorToken1Index);
+            boolean fixCorrect = correctOption1.trim().equals(selectedFix.trim());
 
-            // Turn bug token green
-            if (selectedBugChip != null) {
-                selectedBugChip.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
-                selectedBugChip.setTextColor(Color.parseColor("#FF44FF88"));
-            }
-            // Turn fix chip green
-            if (selectedFixChip != null) {
-                selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#FF3FB950"), dp(2)));
-                selectedFixChip.setTextColor(Color.parseColor("#FF3FB950"));
-            }
-            disableAllChips();
-            disableCodeTokens();
-
-            gameHandler.postDelayed(() -> {
-                if (!isGameOver && !isFinishing()) {
-                    dismissQuestion();
-                    jumpObstacles();
-                    resumeRunner();
+            if (bugCorrect && fixCorrect) {
+                TextView bug1Chip = (selectedBugToken1Index == errorToken1Index)
+                        ? selectedBugChip1 : selectedBugChip2;
+                if (bug1Chip != null) {
+                    bug1Chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
+                    bug1Chip.setTextColor(Color.parseColor("#FF44FF88"));
                 }
-            }, 700);
+                if (selectedFixChip != null) {
+                    selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#FF3FB950"), dp(2)));
+                    selectedFixChip.setTextColor(Color.parseColor("#FF3FB950"));
+                }
 
-        } else {
-            if (!wrongCountedThisQuestion) {
-                wrongCountedThisQuestion = true;
-                incorrectAnswers++;
-                incorrectCount.setText(String.valueOf(incorrectAnswers));
+                if (!isTwoErrorQuestion) {
+                    correctAnswers++;
+                    correctCount.setText(String.valueOf(correctAnswers));
+                    disableAllChips();
+                    disableCodeTokens();
+                    gameHandler.postDelayed(() -> {
+                        if (!isGameOver && !isFinishing()) {
+                            dismissQuestion();
+                            jumpObstacles();
+                            resumeRunner();
+                        }
+                    }, 700);
+                } else {
+                    gameHandler.postDelayed(() -> {
+                        selectedFix = "";
+                        selectedFixChip = null;
+                        submitBtn.setVisibility(View.GONE);
+                        submitBtn.setEnabled(true);
+                        optionsContainer.removeAllViews();
+                        optionsContainer.setVisibility(View.GONE);
+                        optionsHintLabel.setVisibility(View.GONE);
+                        showFixOptions(shuffledOptions2);
+                        bugFixStep = 2;
+                        String hint = currentContext.isEmpty() ? "fix error 2 of 2" : currentContext + "\nfix error 2 of 2";
+                        annotationText.setText(hint);
+                    }, 400);
+                }
+            } else {
+                if (!wrongCountedThisQuestion) {
+                    wrongCountedThisQuestion = true;
+                    incorrectAnswers++;
+                    incorrectCount.setText(String.valueOf(incorrectAnswers));
+                }
+                if (selectedFixChip != null) {
+                    selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1AFF7B72"), Color.parseColor("#FFFF7B72"), dp(2)));
+                    selectedFixChip.setTextColor(Color.parseColor("#FFFF7B72"));
+                }
+                if (isTwoErrorQuestion) {
+                    gameHandler.postDelayed(this::resetBothTokens, 700);
+                } else {
+                    gameHandler.postDelayed(this::resetForRetry, 700);
+                }
             }
 
-            // Flash fix chip red to signal wrong answer
-            if (selectedFixChip != null) {
-                selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1AFF7B72"), Color.parseColor("#FFFF7B72"), dp(2)));
-                selectedFixChip.setTextColor(Color.parseColor("#FFFF7B72"));
-            }
+        } else if (bugFixStep == 2) {
+            int bug2TappedIdx = (selectedBugToken1Index == errorToken1Index)
+                    ? selectedBugToken2Index : selectedBugToken1Index;
+            TextView bug2Chip = (selectedBugToken1Index == errorToken1Index)
+                    ? selectedBugChip2 : selectedBugChip1;
+            boolean bugCorrect = (bug2TappedIdx == errorToken2Index);
+            boolean fixCorrect = correctOption2.trim().equals(selectedFix.trim());
 
-            gameHandler.postDelayed(this::resetForRetry, 700);
+            if (bugCorrect && fixCorrect) {
+                correctAnswers++;
+                correctCount.setText(String.valueOf(correctAnswers));
+                if (bug2Chip != null) {
+                    bug2Chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
+                    bug2Chip.setTextColor(Color.parseColor("#FF44FF88"));
+                }
+                if (selectedFixChip != null) {
+                    selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#FF3FB950"), dp(2)));
+                    selectedFixChip.setTextColor(Color.parseColor("#FF3FB950"));
+                }
+                disableAllChips();
+                disableCodeTokens();
+                gameHandler.postDelayed(() -> {
+                    if (!isGameOver && !isFinishing()) {
+                        dismissQuestion();
+                        jumpObstacles();
+                        resumeRunner();
+                    }
+                }, 700);
+            } else {
+                if (!wrongCountedThisQuestion) {
+                    wrongCountedThisQuestion = true;
+                    incorrectAnswers++;
+                    incorrectCount.setText(String.valueOf(incorrectAnswers));
+                }
+                if (selectedFixChip != null) {
+                    selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1AFF7B72"), Color.parseColor("#FFFF7B72"), dp(2)));
+                    selectedFixChip.setTextColor(Color.parseColor("#FFFF7B72"));
+                }
+                gameHandler.postDelayed(this::resetBothTokens, 700);
+            }
+        }
+    }
+
+    private void resetBothTokens() {
+        if (selectedBugChip1 != null) {
+            selectedBugChip1.setBackground(makeTokenDefault());
+            selectedBugChip1.setTextColor(Color.parseColor("#FFC9D1D9"));
+        }
+        if (selectedBugChip2 != null) {
+            selectedBugChip2.setBackground(makeTokenDefault());
+            selectedBugChip2.setTextColor(Color.parseColor("#FFC9D1D9"));
+        }
+        selectedBugToken1Index = -1; selectedBugChip1 = null;
+        selectedBugToken2Index = -1; selectedBugChip2 = null;
+        selectedFix = ""; selectedFixChip = null;
+        bugFixStep = 0;
+        submitBtn.setVisibility(View.GONE);
+        submitBtn.setEnabled(true);
+        optionsHintLabel.setVisibility(View.GONE);
+        optionsContainer.setVisibility(View.GONE);
+        optionsContainer.removeAllViews();
+        questionTypeLabel.setText("● BUG_SCAN");
+        questionTypeLabel.setTextColor(Color.parseColor("#FF8B949E"));
+        String hint = isTwoErrorQuestion ? "→ find 2 errors" : "→ find 1 error";
+        annotationText.setText(currentContext.isEmpty() ? hint : currentContext + "\n" + hint);
+        for (int i = 0; i < codeTokenRow.getChildCount(); i++) {
+            View v = codeTokenRow.getChildAt(i);
+            v.setEnabled(true);
+            v.setClickable(true);
         }
     }
 
@@ -613,7 +802,6 @@ public class GameActivity extends AppCompatActivity {
         submitBtn.setVisibility(View.GONE);
         submitBtn.setEnabled(true);
 
-        // Reset all fix option chips to default (bug token stays highlighted)
         for (int i = 0; i < optionsContainer.getChildCount(); i++) {
             View v = optionsContainer.getChildAt(i);
             if (v instanceof TextView) {
@@ -632,23 +820,24 @@ public class GameActivity extends AppCompatActivity {
             incorrectCount.setText(String.valueOf(incorrectAnswers));
         }
 
-        // Reveal correct bug token in code row
         for (int i = 0; i < codeTokenRow.getChildCount(); i++) {
             View v = codeTokenRow.getChildAt(i);
             v.setEnabled(false);
             v.setClickable(false);
-            if (v instanceof TextView && i == errorTokenIndex) {
-                ((TextView) v).setBackground(makeRoundRect(dp(4), Color.parseColor("#1A3FB950"), Color.parseColor("#803FB950"), dp(1)));
-                ((TextView) v).setTextColor(Color.parseColor("#803FB950"));
+            if (v instanceof TextView) {
+                if (i == errorToken1Index || (isTwoErrorQuestion && i == errorToken2Index)) {
+                    ((TextView) v).setBackground(makeRoundRect(dp(4), Color.parseColor("#1A3FB950"), Color.parseColor("#803FB950"), dp(1)));
+                    ((TextView) v).setTextColor(Color.parseColor("#803FB950"));
+                }
             }
         }
 
-        // Reveal correct fix option if the options panel is already visible
         for (int i = 0; i < optionsContainer.getChildCount(); i++) {
             View v = optionsContainer.getChildAt(i);
             if (v instanceof TextView) {
                 TextView chip = (TextView) v;
-                if (chip.getText().toString().trim().equals(correctOption.trim())) {
+                String correctToReveal = (bugFixStep == 2) ? correctOption2 : correctOption1;
+                if (chip.getText().toString().trim().equals(correctToReveal.trim())) {
                     chip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#803FB950"), dp(2)));
                     chip.setTextColor(Color.parseColor("#803FB950"));
                 }
@@ -696,10 +885,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void resumeRunner() {
         showQuestion = false;
-        selectedBugTokenIndex = -1;
-        selectedBugChip = null;
-        selectedFix = "";
-        selectedFixChip = null;
+        isTwoErrorQuestion = false;
+        errorToken1Index = -1; errorToken2Index = -1;
+        bugFixStep = 0;
+        selectedBugToken1Index = -1; selectedBugChip1 = null;
+        selectedBugToken2Index = -1; selectedBugChip2 = null;
+        selectedFix = ""; selectedFixChip = null;
+        currentMergedTokens = null;
         qTimer = 180;
         groundY = gridView.getGroundY();
         charContainer.setY(groundY - charSizePx);
@@ -714,18 +906,18 @@ public class GameActivity extends AppCompatActivity {
         int totalSecs = (int) Math.ceil(timeLeft / 10.0);
         int mins = totalSecs / 60;
         int secs = totalSecs % 60;
-        timerDisplay.setText(String.format("%02d:%02d", mins, secs));
+        timerDisplay.setText(String.format(Locale.getDefault(), "%02d:%02d", mins, secs));
     }
 
     private void updateQuestionTimer() {
         int secs = qTimer / 10;
-        questionTimerPill.setText(String.format("00:%02d", secs));
+        questionTimerPill.setText(String.format(Locale.getDefault(), "00:%02d", secs));
 
         if (qTimer <= 50) {
-            questionTimerPill.setBackground(getDrawable(R.drawable.bg_qtimer_pill_red));
+            questionTimerPill.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_qtimer_pill_red));
             questionTimerPill.setTextColor(Color.parseColor("#FFFF7B72"));
         } else {
-            questionTimerPill.setBackground(getDrawable(R.drawable.bg_qtimer_pill));
+            questionTimerPill.setBackground(AppCompatResources.getDrawable(this, R.drawable.bg_qtimer_pill));
             questionTimerPill.setTextColor(Color.parseColor("#FF8B949E"));
         }
     }
@@ -812,7 +1004,6 @@ public class GameActivity extends AppCompatActivity {
         return makeRoundRect(dp(8), Color.parseColor("#FF161B22"), Color.parseColor("#FF2D333B"), dp(1));
     }
 
-    // Code token default: dark pill matching the code block background
     private GradientDrawable makeTokenDefault() {
         return makeRoundRect(dp(4), Color.parseColor("#FF2A2A3E"), Color.parseColor("#FF3A3A5A"), dp(1));
     }
