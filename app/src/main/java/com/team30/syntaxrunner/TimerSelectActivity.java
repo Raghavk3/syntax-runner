@@ -31,6 +31,7 @@ public class TimerSelectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timer_select);
 
         String characterId = getIntent().getStringExtra("characterId");
+        int runnerDrawable = getIntent().getIntExtra("runner_drawable", R.drawable.ic_runner_astronaut);
         String topic = getIntent().getStringExtra("topic");
         String difficulty = getIntent().getStringExtra("difficulty");
 
@@ -125,6 +126,7 @@ public class TimerSelectActivity extends AppCompatActivity {
         btnStartRun.setOnClickListener(v -> {
             Intent intent = new Intent(TimerSelectActivity.this, GameActivity.class);
             intent.putExtra("characterId", characterId);
+            intent.putExtra("runner_drawable", runnerDrawable);
             intent.putExtra("topic", topic);
             intent.putExtra("difficulty", difficulty);
             intent.putExtra("durationMinutes", selectedDuration);

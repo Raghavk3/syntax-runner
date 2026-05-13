@@ -1,88 +1,321 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gameRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_primary">
+    android:background="#FF0D1117">
 
-    <LinearLayout
+    <!-- Scrolling perspective grid background -->
+    <com.team30.syntaxrunner.GridBackgroundView
+        android:id="@+id/gridView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent" />
 
-        <!-- Top bar -->
-        <RelativeLayout
+    <!-- Ground line (top margin set programmatically) -->
+    <View
+        android:id="@+id/groundLine"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#806C63FF" />
+
+    <!-- Obstacle layer -->
+    <FrameLayout
+        android:id="@+id/obstacleLayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Character container (position set programmatically) -->
+    <FrameLayout
+        android:id="@+id/charContainer"
+        android:layout_width="72dp"
+        android:layout_height="72dp">
+
+        <!-- Glow circle behind character -->
+        <View
+            android:id="@+id/charGlow"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:alpha="0.4" />
+
+        <!-- Character avatar drawable -->
+        <ImageView
+            android:id="@+id/charEmoji"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true" />
+
+    </FrameLayout>
+
+    <!-- Header: timer + abort -->
+    <FrameLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <TextView
+            android:id="@+id/timerDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:text="10:00"
+            android:textColor="#FFC9D1D9"
+            android:textSize="40sp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.05"
+            android:textStyle="normal" />
+
+        <LinearLayout
+            android:id="@+id/abortBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_abort_button"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <View
+                android:id="@+id/abortDot"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:layout_marginEnd="6dp"
+                android:background="#CCFF7B72"
+                android:elevation="0dp" />
 
             <TextView
-                android:id="@+id/timerText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="10:00"
-                android:textColor="@color/text_primary"
-                android:textSize="36sp"
-                android:fontFamily="monospace"
-                android:textStyle="bold"/>
-
-            <Button
-                android:id="@+id/btnAbort"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:text="ABORT"
-                android:textColor="#FF4444"
-                android:backgroundTint="#00000000"/>
+                android:textColor="#FFFF7B72"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.2" />
+        </LinearLayout>
 
-        </RelativeLayout>
+    </FrameLayout>
 
-        <!-- Annotation / hint text -->
+    <!-- Score pill (top left) -->
+    <LinearLayout
+        android:id="@+id/scorePill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
+        android:background="@drawable/bg_abort_button"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp">
+
         <TextView
-            android:id="@+id/annotationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✓"
+            android:textColor="#FF3FB950"
+            android:textSize="10sp"
+            android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:id="@+id/correctCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FF3FB950"
+            android:textSize="11sp"
+            android:fontFamily="monospace" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  ✗"
+            android:textColor="#FFFF7B72"
+            android:textSize="10sp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="4dp" />
+
+        <TextView
+            android:id="@+id/incorrectCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFFF7B72"
+            android:textSize="11sp"
+            android:fontFamily="monospace" />
+    </LinearLayout>
+
+    <!-- Question overlay (initially GONE) — no scrolling, card fits screen -->
+    <FrameLayout
+        android:id="@+id/questionOverlayOuter"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3000000"
+        android:visibility="gone">
+
+        <!-- Question card: dark rounded panel, centered vertically -->
+        <LinearLayout
+            android:id="@+id/questionCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_muted"
-            android:textSize="13sp"
-            android:fontFamily="monospace"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp"/>
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="72dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_question_card"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Token buttons row -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
+            <!-- Card header: type label + question timer -->
             <LinearLayout
-                android:id="@+id/tokenContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+
+                <View
+                    android:id="@+id/typeDot"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="#CCFF7B72" />
+
+                <TextView
+                    android:id="@+id/questionTypeLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="SYNTAX_REQUIRED"
+                    android:textColor="#FF8B949E"
+                    android:textSize="10sp"
+                    android:fontFamily="monospace"
+                    android:letterSpacing="0.1" />
+
+                <TextView
+                    android:id="@+id/questionTimerPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:30"
+                    android:textColor="#FF8B949E"
+                    android:textSize="11sp"
+                    android:fontFamily="monospace"
+                    android:background="@drawable/bg_qtimer_pill"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp" />
+            </LinearLayout>
+
+            <!-- Annotation / hint -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="top"
+                android:layout_marginBottom="12dp">
+
+                <View
+                    android:layout_width="5dp"
+                    android:layout_height="5dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="#FF6C63FF" />
+
+                <TextView
+                    android:id="@+id/annotationText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Fix the incorrect token"
+                    android:textColor="#FFC9D1D9"
+                    android:textSize="13sp"
+                    android:fontFamily="monospace"
+                    android:lineSpacingMultiplier="1.4" />
+            </LinearLayout>
+
+            <!-- Code block: shows fill-in-the-blank code with ___ -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/codeTokenRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_code_block"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
+                    android:minWidth="200dp" />
+            </HorizontalScrollView>
+
+            <!-- Hint label above fix options (hidden until bug token is tapped) -->
+            <TextView
+                android:id="@+id/optionsHintLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"/>
+                android:text="select the fix:"
+                android:textColor="#FF6B7280"
+                android:textSize="10sp"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.05"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
 
-        </HorizontalScrollView>
+            <!-- Fix option chips (hidden until bug token is tapped) -->
+            <HorizontalScrollView
+                android:id="@+id/optionsScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="14dp"
+                android:visibility="gone">
 
-        <!-- MCQ options -->
-        <LinearLayout
-            android:id="@+id/optionsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="24dp"/>
+                <LinearLayout
+                    android:id="@+id/optionsContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp" />
+            </HorizontalScrollView>
 
-        <!-- Submit button -->
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_gradient_button"
-            android:text="SUBMIT"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:fontFamily="monospace"
-            android:stateListAnimator="@null"/>
+            <!-- SUBMIT button — appears only after a token is placed in the blank -->
+            <Button
+                android:id="@+id/submitBtn"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/gradient_button"
+                android:text="SUBMIT"
+                android:textColor="#FFFFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:letterSpacing="0.1"
+                android:stateListAnimator="@null"
+                android:visibility="gone" />
 
-    </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

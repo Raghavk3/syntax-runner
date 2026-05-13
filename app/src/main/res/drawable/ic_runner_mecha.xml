@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Left shoulder armour pad -->
+    <path android:fillColor="#3366EE"
+        android:pathData="M11,34 C6,34 4,40 4,46 C4,52 6,58 11,58 L11,34 Z"/>
+
+    <!-- Body - electric blue -->
+    <path android:fillColor="#1144CC"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - dark blue -->
+    <path android:fillColor="#0033AA"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Shoulder pad highlight edge -->
+    <path android:fillColor="#00000000" android:strokeColor="#6699FF" android:strokeWidth="1.5"
+        android:pathData="M11,36 C7,40 7,52 11,56"/>
+
+    <!-- Body panel lines -->
+    <path android:fillColor="#00000000" android:strokeColor="#2255DD" android:strokeWidth="1"
+        android:pathData="M18,42 C22,40 36,39 42,39 M18,42 L18,72 M42,39 L42,72"/>
+
+    <!-- Rectangular visor - cockpit window -->
+    <path android:fillColor="#0A0A1A"
+        android:pathData="M26,20 L62,20 C64,20 65,21 65,23 L65,54 C65,56 64,57 62,57 L26,57 C24,57 23,56 23,54 L23,23 C23,21 24,20 26,20 Z"/>
+
+    <!-- Visor inner glow line -->
+    <path android:fillColor="#00000000" android:strokeColor="#004499" android:strokeWidth="1"
+        android:pathData="M25,38 L63,38 M25,46 L63,46"/>
+
+    <!-- Visor eye bar - cyan lit -->
+    <path android:fillColor="#00FFFF"
+        android:pathData="M26,30 L62,30 L62,36 L26,36 Z"/>
+
+    <!-- Visor eye bar glow -->
+    <path android:fillColor="#4400FFFF"
+        android:pathData="M26,30 L62,30 L62,36 L26,36 Z"/>
+
+    <!-- Chest core - glowing cyan circle -->
+    <path android:fillColor="#00FFFF"
+        android:pathData="M38,66 C38,62.7 40,61 42,61 C44,61 46,62.7 46,66 C46,69.3 44,71 42,71 C40,71 38,69.3 38,66 Z"/>
+
+    <!-- Chest core outer ring -->
+    <path android:fillColor="#00000000" android:strokeColor="#00CCCC" android:strokeWidth="1.5"
+        android:pathData="M36,66 C36,61.6 38.7,58 42,58 C45.3,58 48,61.6 48,66 C48,70.4 45.3,74 42,74 C38.7,74 36,70.4 36,66"/>
+
+    <!-- Armour chest plate edges -->
+    <path android:fillColor="#00000000" android:strokeColor="#3366EE" android:strokeWidth="1"
+        android:pathData="M18,58 L62,58"/>
+
+</vector>

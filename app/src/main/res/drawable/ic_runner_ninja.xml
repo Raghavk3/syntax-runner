@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Body - black -->
+    <path android:fillColor="#111111"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - slightly lighter black -->
+    <path android:fillColor="#222222"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Mask face area (same color, hides body boundary at face) -->
+    <path android:fillColor="#181818"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17 Z"/>
+
+    <!-- Red headband -->
+    <path android:fillColor="#CC2222"
+        android:pathData="M27,22 C32,17 45,15 58,18 L62,24 C50,21 34,23 29,28 Z"/>
+
+    <!-- Headband knot - right side -->
+    <path android:fillColor="#AA1111"
+        android:pathData="M59,18 C57,18 55,20 55,22 C55,24 57,26 59,26 C61,26 63,24 63,22 C63,20 61,18 59,18 Z"/>
+
+    <!-- Eye slit - narrow white gap -->
+    <path android:fillColor="#BBBBBB"
+        android:pathData="M29,36 L63,36 L63,40 L29,40 Z"/>
+
+    <!-- Eye slit shadow top -->
+    <path android:fillColor="#333333"
+        android:pathData="M29,36 L63,36 L63,37.5 L29,37.5 Z"/>
+
+    <!-- Body subtle shadow lines -->
+    <path android:fillColor="#00000000" android:strokeColor="#222222" android:strokeWidth="1"
+        android:pathData="M20,68 C35,71 52,71 62,68"/>
+
+</vector>

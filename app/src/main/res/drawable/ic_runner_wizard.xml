@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Pointy wizard hat -->
+    <path android:fillColor="#2B0A55"
+        android:pathData="M42,1 L27,18 L57,18 Z"/>
+
+    <!-- Hat brim -->
+    <path android:fillColor="#3B1566"
+        android:pathData="M24,18 L60,18 L60,23 L24,23 Z"/>
+
+    <!-- Star on hat -->
+    <path android:fillColor="#FFD700"
+        android:pathData="M42,5 L43.5,8.5 L47.5,8.5 L44.5,10.8 L45.8,14.5 L42,12.2 L38.2,14.5 L39.5,10.8 L36.5,8.5 L40.5,8.5 Z"/>
+
+    <!-- Body - purple -->
+    <path android:fillColor="#6633AA"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack -->
+    <path android:fillColor="#4422AA"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Visor - magical purple glow -->
+    <path android:fillColor="#BB88EE"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17 Z"/>
+
+    <!-- Visor highlight -->
+    <path android:fillColor="#66EEDDFF"
+        android:pathData="M36,20 C33,26 32,35 34,43 C37,34 43,24 36,20 Z"/>
+
+    <!-- Wand - right side of body -->
+    <path android:fillColor="#00000000" android:strokeColor="#C8A000" android:strokeWidth="2"
+        android:pathData="M68,56 L74,46"/>
+
+    <!-- Wand star tip -->
+    <path android:fillColor="#FFD700"
+        android:pathData="M74,43 L75.2,46.2 L78.6,46.2 L76,48.2 L77,51.5 L74,49.5 L71,51.5 L72,48.2 L69.4,46.2 L72.8,46.2 Z"/>
+
+    <!-- Robe moon decoration -->
+    <path android:fillColor="#9966CC"
+        android:pathData="M30,70 C28,66 30,62 34,62 C38,62 40,66 38,70 Z"/>
+
+</vector>

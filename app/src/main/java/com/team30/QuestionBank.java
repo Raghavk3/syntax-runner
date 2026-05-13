@@ -1,6 +1,8 @@
 package com.team30.syntaxrunner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -95,5 +97,10 @@ public abstract class QuestionBank implements QuestionBankInterface
     /** Returns how many questions are currently loaded in this bank. */
     public int size() {
         return QUESTIONS.size();
+    }
+
+    /** Returns all questions loaded in this bank as a flat list. */
+    public List<String[][]> getAllQuestions() {
+        return new ArrayList<>(QUESTIONS.values());
     }
 }

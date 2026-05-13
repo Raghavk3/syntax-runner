@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Body - bright alien green -->
+    <path android:fillColor="#44DD55"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - slightly darker green -->
+    <path android:fillColor="#33CC44"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Body highlight sheen -->
+    <path android:fillColor="#2266DD66"
+        android:pathData="M26,18 C18,28 16,44 20,58 C24,44 28,28 26,18 Z"/>
+
+    <!-- Left large eye - black oval -->
+    <path android:fillColor="#111111"
+        android:pathData="M29,20 C29,13 33,9 38,9 C43,9 47,13 47,20 C47,27 43,31 38,31 C33,31 29,27 29,20 Z"/>
+
+    <!-- Right large eye - black oval -->
+    <path android:fillColor="#111111"
+        android:pathData="M44,20 C44,13 48,9 53,9 C58,9 62,13 62,20 C62,27 58,31 53,31 C48,31 44,27 44,20 Z"/>
+
+    <!-- Left eye highlight -->
+    <path android:fillColor="#CCFFFFFF"
+        android:pathData="M31,14 C30,16 30,19 32,21 C32,18 33,15 31,14 Z"/>
+
+    <!-- Right eye highlight -->
+    <path android:fillColor="#CCFFFFFF"
+        android:pathData="M46,14 C45,16 45,19 47,21 C47,18 48,15 46,14 Z"/>
+
+    <!-- Alien nostril slits (subtle) -->
+    <path android:fillColor="#33AA44"
+        android:pathData="M38,42 C37,42 36,43 37,44 C38,45 39,44 39,43 C39,42 38.5,42 38,42 Z"/>
+    <path android:fillColor="#33AA44"
+        android:pathData="M46,42 C45,42 44,43 45,44 C46,45 47,44 47,43 C47,42 46.5,42 46,42 Z"/>
+
+</vector>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Antenna line -->
+    <path android:fillColor="#00000000" android:strokeColor="#AAAAAA" android:strokeWidth="2.5"
+        android:pathData="M46,9 L46,2"/>
+
+    <!-- Antenna tip ball -->
+    <path android:fillColor="#FFCC00"
+        android:pathData="M43,2 C43,0.3 44.3,-1 46,-1 C47.7,-1 49,0.3 49,2 C49,3.7 47.7,5 46,5 C44.3,5 43,3.7 43,2 Z"/>
+
+    <!-- Body - metallic grey -->
+    <path android:fillColor="#6E6E80"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack -->
+    <path android:fillColor="#565666"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Display panel - dark screen -->
+    <path android:fillColor="#141424"
+        android:pathData="M29,22 L61,22 C63,22 64,23 64,25 L64,52 C64,54 63,55 61,55 L29,55 C27,55 26,54 26,52 L26,25 C26,23 27,22 29,22 Z"/>
+
+    <!-- LED left eye - green -->
+    <path android:fillColor="#00FF66"
+        android:pathData="M31,31 L40,31 L40,41 L31,41 Z"/>
+
+    <!-- LED right eye - red -->
+    <path android:fillColor="#FF3333"
+        android:pathData="M49,31 L58,31 L58,41 L49,41 Z"/>
+
+    <!-- LED left glow -->
+    <path android:fillColor="#66AAFFCC"
+        android:pathData="M31,31 L35,31 L35,36 L31,36 Z"/>
+
+    <!-- LED right glow -->
+    <path android:fillColor="#66FFAAAA"
+        android:pathData="M49,31 L53,31 L53,36 L49,36 Z"/>
+
+    <!-- Panel scan line -->
+    <path android:fillColor="#00000000" android:strokeColor="#33335A" android:strokeWidth="1"
+        android:pathData="M27,48 L63,48"/>
+
+    <!-- Body rivet seam -->
+    <path android:fillColor="#00000000" android:strokeColor="#555568" android:strokeWidth="1.5"
+        android:pathData="M20,65 C36,68 52,68 62,65"/>
+
+</vector>

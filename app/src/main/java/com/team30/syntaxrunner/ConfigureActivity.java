@@ -21,7 +21,8 @@ public class ConfigureActivity extends AppCompatActivity {
     private View selectedTopicView = null;
     private View selectedDifficultyView = null;
 
-    private static final String[] TOPICS = {"DSA", "OOP", "Fundamentals", "Algorithms"};
+    // Fix 5: Only OOP module — no DSA, Fundamentals, or Algorithms
+    private static final String[] TOPICS = {"OOP"};
     private static final String[] DIFFICULTIES = {"EASY", "MEDIUM", "HARD"};
 
     @Override
@@ -30,6 +31,7 @@ public class ConfigureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_configure);
 
         String characterId = getIntent().getStringExtra("characterId");
+        int runnerDrawable = getIntent().getIntExtra("runner_drawable", R.drawable.ic_runner_astronaut);
 
         GridLayout topicGrid = findViewById(R.id.topicGrid);
         LinearLayout difficultyRow = findViewById(R.id.difficultyRow);
@@ -47,43 +49,32 @@ public class ConfigureActivity extends AppCompatActivity {
         int cardWidth = (screenWidth - (margin * 2) - spacing) / 2;
         int cardHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 52, getResources().getDisplayMetrics());
 
-        // Build topic grid (2x2)
+        // Build topic grid — single OOP card, pre-selected
         for (int i = 0; i < TOPICS.length; i++) {
-            final int index = i;
             final String topic = TOPICS[i];
-
             TextView card = createSelectionCard(topic, cardWidth, cardHeight);
 
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = cardWidth;
             params.height = cardHeight;
             params.setMargins(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
-            params.columnSpec = GridLayout.spec(i % 2);
-            params.rowSpec = GridLayout.spec(i / 2);
+            params.columnSpec = GridLayout.spec(0);
+            params.rowSpec = GridLayout.spec(0);
             card.setLayoutParams(params);
 
-            // Stagger animation
             card.setAlpha(0f);
             card.setScaleX(0.9f);
             card.setScaleY(0.9f);
-            card.animate().alpha(1f).scaleX(1f).scaleY(1f)
-                    .setDuration(350).setStartDelay(index * 70L).start();
-
-            card.setOnClickListener(v -> {
-                if (selectedTopicView != null) {
-                    selectedTopicView.setBackground(getDrawable(R.drawable.bg_card_unselected));
-                    ((TextView) selectedTopicView).setTextColor(Color.parseColor("#8B949E"));
-                    selectedTopicView.animate().scaleX(1f).scaleY(1f).setDuration(150).start();
-                }
-                selectedTopic = topic;
-                selectedTopicView = card;
-                card.setBackground(getDrawable(R.drawable.bg_card_selected));
-                card.setTextColor(Color.WHITE);
-                card.animate().scaleX(1.03f).scaleY(1.03f).setDuration(150).start();
-                updateNextButton(btnNextStep);
-            });
+            card.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(350).start();
 
             topicGrid.addView(card);
+
+            // Fix 5: Auto-select OOP — it is the only and pre-selected module
+            selectedTopic = topic;
+            selectedTopicView = card;
+            card.setBackground(getDrawable(R.drawable.bg_card_selected));
+            card.setTextColor(Color.WHITE);
+            card.animate().scaleX(1.03f).scaleY(1.03f).setDuration(150).start();
         }
 
         // Build difficulty row
@@ -98,7 +89,6 @@ public class ConfigureActivity extends AppCompatActivity {
             params.setMargins(spacing / 2, 0, spacing / 2, 0);
             card.setLayoutParams(params);
 
-            // Stagger animation with horizontal slide
             card.setAlpha(0f);
             card.setTranslationX(-15f);
             card.animate().alpha(1f).translationX(0f)
@@ -125,6 +115,7 @@ public class ConfigureActivity extends AppCompatActivity {
             if (selectedTopic != null && selectedDifficulty != null) {
                 Intent intent = new Intent(ConfigureActivity.this, TimerSelectActivity.class);
                 intent.putExtra("characterId", characterId);
+                intent.putExtra("runner_drawable", runnerDrawable);
                 intent.putExtra("topic", selectedTopic);
                 intent.putExtra("difficulty", selectedDifficulty);
                 startActivity(intent);
@@ -145,7 +136,8 @@ public class ConfigureActivity extends AppCompatActivity {
     }
 
     private void updateNextButton(Button btn) {
-        if (selectedTopic != null && selectedDifficulty != null) {
+        // selectedTopic is always "OOP" (pre-selected), so only difficulty must be chosen
+        if (selectedDifficulty != null) {
             btn.setEnabled(true);
             btn.animate().alpha(1f).setDuration(300).start();
         }

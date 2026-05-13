@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Body - murky decayed green with torn bottom edge -->
+    <path android:fillColor="#4A5E2A"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,78 L18,85 L22,78 L26,86 L30,78 L34,86 L38,78 L40,84 L42,78 L46,86 L50,78 L54,86 L58,78 L62,84 L62,78 C68,70 72,60 72,50 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - darker murky -->
+    <path android:fillColor="#3A4E1A"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Decay dark patches on body -->
+    <path android:fillColor="#334418"
+        android:pathData="M15,50 C14,54 16,60 19,62 C18,56 16,52 15,50 Z"/>
+    <path android:fillColor="#334418"
+        android:pathData="M55,65 C54,68 56,72 58,73 C58,70 57,67 55,65 Z"/>
+
+    <!-- Visor area - decayed dark greenish -->
+    <path android:fillColor="#2A3A14"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17 Z"/>
+
+    <!-- Single eye - sickly yellow-green glow (left side) -->
+    <path android:fillColor="#AAFF00"
+        android:pathData="M30,28 C30,23 33.5,20 38,20 C42.5,20 46,23 46,28 C46,33 42.5,36 38,36 C33.5,36 30,33 30,28 Z"/>
+
+    <!-- Eye inner pupil -->
+    <path android:fillColor="#223300"
+        android:pathData="M35,28 C35,26 36.3,25 38,25 C39.7,25 41,26 41,28 C41,30 39.7,31 38,31 C36.3,31 35,30 35,28 Z"/>
+
+    <!-- Eye glow ring -->
+    <path android:fillColor="#00000000" android:strokeColor="#88FF00" android:strokeWidth="1.5"
+        android:pathData="M29,28 C29,22 33,18.5 38,18.5 C43,18.5 47,22 47,28 C47,34 43,37.5 38,37.5 C33,37.5 29,34 29,28"/>
+
+    <!-- Dark empty eye socket (right side) -->
+    <path android:fillColor="#111100"
+        android:pathData="M48,28 C48,23 51.5,20 56,20 C60.5,20 64,23 64,28 C64,33 60.5,36 56,36 C51.5,36 48,33 48,28 Z"/>
+
+    <!-- X stitches across body wound -->
+    <path android:fillColor="#00000000" android:strokeColor="#223310" android:strokeWidth="1"
+        android:pathData="M22,62 L26,66 M26,62 L22,66 M38,68 L42,72 M42,68 L38,72"/>
+
+    <!-- Bite mark / teeth detail near mouth area -->
+    <path android:fillColor="#558830"
+        android:pathData="M34,48 L36,44 L38,48 L40,44 L42,48 L44,44 L46,48 L48,44 L50,48 L50,52 L34,52 Z"/>
+
+</vector>

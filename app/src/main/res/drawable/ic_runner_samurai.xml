@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Gold helmet crest / horn -->
+    <path android:fillColor="#FFD700"
+        android:pathData="M46,2 L40,16 L52,16 Z"/>
+
+    <!-- Crest base band -->
+    <path android:fillColor="#CCAA00"
+        android:pathData="M36,14 L56,14 L56,20 L36,20 Z"/>
+
+    <!-- Body - dark crimson -->
+    <path android:fillColor="#7A0000"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack -->
+    <path android:fillColor="#600000"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Dark helmet visor face plate -->
+    <path android:fillColor="#220000"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17 Z"/>
+
+    <!-- Eye slit - gold narrow gap -->
+    <path android:fillColor="#FFCC00"
+        android:pathData="M28,35 L64,35 L64,39 L28,39 Z"/>
+
+    <!-- Eye slit shadow above -->
+    <path android:fillColor="#440000"
+        android:pathData="M28,35 L64,35 L64,36.5 L28,36.5 Z"/>
+
+    <!-- Chest armour plate -->
+    <path android:fillColor="#333333"
+        android:pathData="M19,58 C22,56 36,55 42,55 C48,55 60,56 63,58 L62,72 C58,74 48,75 42,75 C36,75 24,74 20,72 Z"/>
+
+    <!-- Armour plate highlight -->
+    <path android:fillColor="#00000000" android:strokeColor="#555555" android:strokeWidth="1"
+        android:pathData="M22,62 C36,60 52,60 61,62 M22,67 C36,65 52,65 61,67"/>
+
+    <!-- Armour rivets -->
+    <path android:fillColor="#666666"
+        android:pathData="M24,59 C23,59 22.5,59.5 22.5,60.5 C22.5,61.5 23,62 24,62 C25,62 25.5,61.5 25.5,60.5 C25.5,59.5 25,59 24,59 Z"/>
+    <path android:fillColor="#666666"
+        android:pathData="M60,59 C59,59 58.5,59.5 58.5,60.5 C58.5,61.5 59,62 60,62 C61,62 61.5,61.5 61.5,60.5 C61.5,59.5 61,59 60,59 Z"/>
+
+</vector>

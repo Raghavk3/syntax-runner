@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class CharacterSelectActivity extends AppCompatActivity {
 
     private String selectedCharacter = null;
+    private int selectedDrawableId = 0;
     private View selectedView = null;
 
     private static final String[] CHARACTERS = {
@@ -25,11 +27,17 @@ public class CharacterSelectActivity extends AppCompatActivity {
             "zombie"
     };
 
-    private static final String[] CHARACTER_EMOJIS = {
-            "👨‍🚀", "🤖", "💻",
-            "👽", "🥷", "🧙",
-            "🦾", "⚔️", "🎮",
-            "🧟"
+    private static final int[] CHARACTER_DRAWABLES = {
+            R.drawable.ic_runner_astronaut,
+            R.drawable.ic_runner_robot,
+            R.drawable.ic_runner_hacker,
+            R.drawable.ic_runner_alien,
+            R.drawable.ic_runner_ninja,
+            R.drawable.ic_runner_wizard,
+            R.drawable.ic_runner_cyborg,
+            R.drawable.ic_runner_samurai,
+            R.drawable.ic_runner_mecha,
+            R.drawable.ic_runner_zombie,
     };
 
     @Override
@@ -69,12 +77,14 @@ public class CharacterSelectActivity extends AppCompatActivity {
             params.rowSpec = GridLayout.spec(i / 3);
             card.setLayoutParams(params);
 
-            // Avatar emoji placeholder
-            TextView emoji = new TextView(this);
-            emoji.setText(CHARACTER_EMOJIS[i]);
-            emoji.setTextSize(32);
-            emoji.setGravity(Gravity.CENTER);
-            card.addView(emoji);
+            // Avatar drawable
+            int avatarSize = (int)(54 * getResources().getDisplayMetrics().density);
+            ImageView avatar = new ImageView(this);
+            avatar.setImageResource(CHARACTER_DRAWABLES[i]);
+            avatar.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            LinearLayout.LayoutParams avatarParams = new LinearLayout.LayoutParams(avatarSize, avatarSize);
+            avatar.setLayoutParams(avatarParams);
+            card.addView(avatar);
 
             // Character name
             TextView name = new TextView(this);
@@ -106,6 +116,7 @@ public class CharacterSelectActivity extends AppCompatActivity {
                 }
                 // Select new
                 selectedCharacter = characterId;
+                selectedDrawableId = CHARACTER_DRAWABLES[index];
                 selectedView = card;
                 card.setBackground(getDrawable(R.drawable.bg_card_selected));
                 card.animate().scaleX(1.05f).scaleY(1.05f).setDuration(200).start();
@@ -122,6 +133,7 @@ public class CharacterSelectActivity extends AppCompatActivity {
             if (selectedCharacter != null) {
                 Intent intent = new Intent(CharacterSelectActivity.this, ConfigureActivity.class);
                 intent.putExtra("characterId", selectedCharacter);
+                intent.putExtra("runner_drawable", selectedDrawableId);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }

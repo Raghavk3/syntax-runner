@@ -17,4 +17,7 @@
     <color name="button_gradient_start">#FF6C63FF</color>
     <color name="button_gradient_end">#FF4DA3FF</color>
     <color name="glow_purple">#406C63FF</color>
+    <color name="correct_green">#FF3FB950</color>
+    <color name="error_red">#FFFF7B72</color>
+    <color name="text_code">#FFC9D1D9</color>
 </resources>

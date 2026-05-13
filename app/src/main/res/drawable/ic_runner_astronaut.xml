@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Body - light grey spacesuit -->
+    <path android:fillColor="#DCDCE8"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - mid-grey tank -->
+    <path android:fillColor="#B4B4C8"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Helmet rim ring -->
+    <path android:fillColor="#00000000" android:strokeColor="#9898AA" android:strokeWidth="2.5"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17"/>
+
+    <!-- Visor - blue glass -->
+    <path android:fillColor="#8EC8F0"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 47,59 C56,58 64,50 65,41 C66,32 61,21 53,16 C48,12 39,12 33,17 Z"/>
+
+    <!-- Visor highlight -->
+    <path android:fillColor="#59FFFFFF"
+        android:pathData="M36,21 C32,27 31,36 33,44 C36,35 42,25 36,21 Z"/>
+
+    <!-- Suit chest stripe -->
+    <path android:fillColor="#00000000" android:strokeColor="#BBBBC8" android:strokeWidth="2"
+        android:pathData="M21,74 C36,77 52,77 61,74"/>
+
+    <!-- O2 indicator dot -->
+    <path android:fillColor="#6688AA"
+        android:pathData="M26,68 C24,68 23,69.5 23,71 C23,72.5 24,74 26,74 C28,74 29,72.5 29,71 C29,69.5 28,68 26,68 Z"/>
+
+</vector>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Body left half - grey organic side -->
+    <path android:fillColor="#777788"
+        android:pathData="M40,8 C20,8 11,24 11,42 C11,58 14,71 20,79 C17,85 13,93 23,94 C33,95 35,83 41,83 L41,8 Z"/>
+
+    <!-- Body right half - blue metal side -->
+    <path android:fillColor="#2255BB"
+        android:pathData="M41,8 L41,83 C47,83 49,95 59,94 C69,93 65,85 62,79 C68,71 72,61 72,51 C72,44 68,42 64,42 C63,28 57,14 46,9 Z"/>
+
+    <!-- Backpack - dark blue -->
+    <path android:fillColor="#1144AA"
+        android:pathData="M64,44 L64,70 C72,70 77,65 77,57 C77,49 72,44 64,44 Z"/>
+
+    <!-- Visor left half - normal blue tint -->
+    <path android:fillColor="#99BBDD"
+        android:pathData="M33,17 C26,22 24,34 27,45 C30,55 38,60 41,59 L41,17 Z"/>
+
+    <!-- Visor right half - red cybernetic -->
+    <path android:fillColor="#BB1111"
+        android:pathData="M41,17 L41,59 C47,58 56,52 64,42 C66,32 61,21 53,16 C48,12 44,15 41,17 Z"/>
+
+    <!-- Left eye - normal blue -->
+    <path android:fillColor="#4488FF"
+        android:pathData="M30,32 C30,28 33,25 37,25 C41,25 44,28 44,32 C44,36 41,39 37,39 C33,39 30,36 30,32 Z"/>
+
+    <!-- Right eye - red LED -->
+    <path android:fillColor="#FF2222"
+        android:pathData="M45,32 C45,28 48,25 52,25 C56,25 59,28 59,32 C59,36 56,39 52,39 C48,39 45,36 45,32 Z"/>
+
+    <!-- Right eye glow ring -->
+    <path android:fillColor="#00000000" android:strokeColor="#FF6666" android:strokeWidth="1.5"
+        android:pathData="M45,32 C45,28 48,25 52,25 C56,25 59,28 59,32 C59,36 56,39 52,39 C48,39 45,36 45,32"/>
+
+    <!-- Center seam line -->
+    <path android:fillColor="#00000000" android:strokeColor="#000000" android:strokeWidth="1.5"
+        android:pathData="M41,8 L41,83"/>
+
+    <!-- Metal arm plates on right body -->
+    <path android:fillColor="#00000000" android:strokeColor="#1133AA" android:strokeWidth="1"
+        android:pathData="M46,62 L61,62 M46,67 L60,67 M46,72 L57,72"/>
+
+    <!-- Left eye highlight -->
+    <path android:fillColor="#99CCFF"
+        android:pathData="M31,28 C30,30 30,33 31,35 C32,32 33,29 31,28 Z"/>
+
+</vector>

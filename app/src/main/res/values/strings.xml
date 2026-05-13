@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">runtime.</string>
-    <string name="logo_text">rt.</string>
-    <string name="app_title">runtime.</string>
+    <string name="app_name">Syntax Runner.</string>
+    <string name="logo_text">sr.</string>
+    <string name="app_title">Syntax Runner.</string>
     <string name="tagline">RUN. FOCUS. EXECUTE.</string>
     <string name="start">START</string>
     <string name="back">back</string>
