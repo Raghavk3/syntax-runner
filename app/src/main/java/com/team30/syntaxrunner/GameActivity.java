@@ -57,6 +57,7 @@ public class GameActivity extends AppCompatActivity {
     private int timeLeft;
     private boolean showQuestion = false;
     private int qTimer = 180;
+    private int questionTimerStart = 300;
     private int distanceCount = 0;
     private int lastObstacleDist = 0;
     private int correctAnswers = 0;
@@ -85,6 +86,7 @@ public class GameActivity extends AppCompatActivity {
     private TextView selectedFixChip = null;
     private boolean wrongCountedThisQuestion = false;
     private String currentContext = "";
+    private String currentStepCorrectOption = "";
     private List<QuestionSlot> allQuestions = new ArrayList<>();
     private int questionIndex = 0;
 
@@ -210,9 +212,9 @@ public class GameActivity extends AppCompatActivity {
     private void setupDifficulty() {
         Difficulty diffEnum;
         switch (difficulty) {
-            case "HARD":   diffEnum = Difficulty.HARD;   break;
-            case "MEDIUM": diffEnum = Difficulty.MEDIUM; break;
-            default:       diffEnum = Difficulty.EASY;   break;
+            case "HARD":   diffEnum = Difficulty.HARD;   questionTimerStart = 100; break;
+            case "MEDIUM": diffEnum = Difficulty.MEDIUM; questionTimerStart = 200; break;
+            default:       diffEnum = Difficulty.EASY;   questionTimerStart = 300; break;
         }
         DifficultyManager difficultyManager = new DifficultyManager(diffEnum);
     }
@@ -414,7 +416,7 @@ public class GameActivity extends AppCompatActivity {
     private void triggerQuestion() {
         if (showQuestion) return;
         showQuestion = true;
-        qTimer = 180;
+        qTimer = questionTimerStart;
         wrongCountedThisQuestion = false;
 
         if (charBobAnim != null) charBobAnim.cancel();
@@ -564,55 +566,79 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void handleBugTokenTap(int tokenIdx, TextView chip) {
-        if (bugFixStep > 0) return;
+        if (bugFixStep == 1 || bugFixStep == 3) return;
 
-        if (!isTwoErrorQuestion) {
-            if (selectedBugChip1 != null && selectedBugChip1 != chip) {
-                selectedBugChip1.setBackground(makeTokenDefault());
-                selectedBugChip1.setTextColor(Color.parseColor("#FFC9D1D9"));
-            }
-            selectedBugToken1Index = tokenIdx;
-            selectedBugChip1 = chip;
-            chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
-            chip.setTextColor(Color.WHITE);
-            selectedFix = "";
-            if (selectedFixChip != null) {
-                selectedFixChip.setBackground(makeChipDefault());
-                selectedFixChip.setTextColor(Color.parseColor("#FFC9D1D9"));
-                selectedFixChip = null;
-            }
-            submitBtn.setVisibility(View.GONE);
-            showFixOptions(shuffledOptions1);
-        } else {
-            if (selectedBugChip1 == null) {
+        if (bugFixStep == 0) {
+            boolean isRealBug = !isTwoErrorQuestion
+                    ? tokenIdx == errorToken1Index
+                    : tokenIdx == errorToken1Index || tokenIdx == errorToken2Index;
+
+            if (isRealBug) {
+                if (selectedBugChip1 != null && selectedBugChip1 != chip) {
+                    selectedBugChip1.setBackground(makeTokenDefault());
+                    selectedBugChip1.setTextColor(Color.parseColor("#FFC9D1D9"));
+                }
                 selectedBugToken1Index = tokenIdx;
                 selectedBugChip1 = chip;
                 chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
                 chip.setTextColor(Color.WHITE);
-                String hint = currentContext.isEmpty() ? "→ tap 1 more error" : currentContext + "\n→ tap 1 more error";
-                annotationText.setText(hint);
-            } else if (chip == selectedBugChip1) {
-                chip.setBackground(makeTokenDefault());
-                chip.setTextColor(Color.parseColor("#FFC9D1D9"));
-                selectedBugToken1Index = -1;
-                selectedBugChip1 = null;
-                String hint = currentContext.isEmpty() ? "→ find 2 errors" : currentContext + "\n→ find 2 errors";
-                annotationText.setText(hint);
-            } else if (selectedBugChip2 == null) {
+
+                if (tokenIdx == errorToken1Index) {
+                    currentStepCorrectOption = correctOption1;
+                    showFixOptionsForStep(shuffledOptions1);
+                } else {
+                    currentStepCorrectOption = correctOption2;
+                    showFixOptionsForStep(shuffledOptions2);
+                }
+                questionTypeLabel.setText("● BUG_DETECTED — fix it");
+                questionTypeLabel.setTextColor(Color.parseColor("#FFFF4444"));
+                annotationText.setText(currentContext.isEmpty() ? "fix the bug" : currentContext + "\nfix the bug");
+                bugFixStep = 1;
+            } else {
+                flashWrongToken(chip);
+                final String prev = annotationText.getText().toString();
+                annotationText.setText("not a bug, keep looking");
+                gameHandler.postDelayed(() -> annotationText.setText(prev), 1200);
+            }
+        } else if (bugFixStep == 2) {
+            int otherBugIdx = (selectedBugToken1Index == errorToken1Index)
+                    ? errorToken2Index : errorToken1Index;
+
+            if (tokenIdx == otherBugIdx) {
                 selectedBugToken2Index = tokenIdx;
                 selectedBugChip2 = chip;
                 chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF4444"), Color.parseColor("#FFFF4444"), dp(1)));
                 chip.setTextColor(Color.WHITE);
-                String hint = currentContext.isEmpty() ? "fix error 1 of 2" : currentContext + "\nfix error 1 of 2";
-                annotationText.setText(hint);
-                showFixOptions(shuffledOptions1);
+
+                if (otherBugIdx == errorToken1Index) {
+                    currentStepCorrectOption = correctOption1;
+                    showFixOptionsForStep(shuffledOptions1);
+                } else {
+                    currentStepCorrectOption = correctOption2;
+                    showFixOptionsForStep(shuffledOptions2);
+                }
+                questionTypeLabel.setText("● BUG_DETECTED — fix it");
+                questionTypeLabel.setTextColor(Color.parseColor("#FFFF4444"));
+                annotationText.setText(currentContext.isEmpty() ? "fix the bug" : currentContext + "\nfix the bug");
+                bugFixStep = 3;
+            } else {
+                flashWrongToken(chip);
+                final String prev = annotationText.getText().toString();
+                annotationText.setText("not a bug, keep looking");
+                gameHandler.postDelayed(() -> annotationText.setText(prev), 1200);
             }
         }
     }
 
-    private void showFixOptions(List<String> options) {
-        questionTypeLabel.setText("● BUG_DETECTED");
-        questionTypeLabel.setTextColor(Color.parseColor("#FFFF4444"));
+    private void showFixOptionsForStep(List<String> options) {
+        selectedFix = "";
+        if (selectedFixChip != null) {
+            selectedFixChip.setBackground(makeChipDefault());
+            selectedFixChip.setTextColor(Color.parseColor("#FFC9D1D9"));
+            selectedFixChip = null;
+        }
+        submitBtn.setVisibility(View.GONE);
+        submitBtn.setEnabled(true);
         optionsHintLabel.setVisibility(View.VISIBLE);
         optionsContainer.removeAllViews();
 
@@ -639,7 +665,6 @@ public class GameActivity extends AppCompatActivity {
         }
 
         optionsContainer.setVisibility(View.VISIBLE);
-        bugFixStep = 1;
     }
 
     private void handleFixTap(String fix, TextView chip) {
@@ -663,23 +688,18 @@ public class GameActivity extends AppCompatActivity {
         if (selectedFix.isEmpty()) return;
         submitBtn.setEnabled(false);
 
-        if (bugFixStep == 1) {
-            boolean bugCorrect = (selectedBugToken1Index == errorToken1Index
-                    || selectedBugToken2Index == errorToken1Index);
-            boolean fixCorrect = correctOption1.trim().equals(selectedFix.trim());
+        boolean fixCorrect = currentStepCorrectOption.trim().equals(selectedFix.trim());
 
-            if (bugCorrect && fixCorrect) {
-                TextView bug1Chip = (selectedBugToken1Index == errorToken1Index)
-                        ? selectedBugChip1 : selectedBugChip2;
-                if (bug1Chip != null) {
-                    bug1Chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
-                    bug1Chip.setTextColor(Color.parseColor("#FF44FF88"));
+        if (bugFixStep == 1) {
+            if (fixCorrect) {
+                if (selectedBugChip1 != null) {
+                    selectedBugChip1.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
+                    selectedBugChip1.setTextColor(Color.parseColor("#FF44FF88"));
                 }
                 if (selectedFixChip != null) {
                     selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#FF3FB950"), dp(2)));
                     selectedFixChip.setTextColor(Color.parseColor("#FF3FB950"));
                 }
-
                 if (!isTwoErrorQuestion) {
                     correctAnswers++;
                     correctCount.setText(String.valueOf(correctAnswers));
@@ -693,6 +713,7 @@ public class GameActivity extends AppCompatActivity {
                         }
                     }, 700);
                 } else {
+                    disableAllChips();
                     gameHandler.postDelayed(() -> {
                         selectedFix = "";
                         selectedFixChip = null;
@@ -701,10 +722,11 @@ public class GameActivity extends AppCompatActivity {
                         optionsContainer.removeAllViews();
                         optionsContainer.setVisibility(View.GONE);
                         optionsHintLabel.setVisibility(View.GONE);
-                        showFixOptions(shuffledOptions2);
-                        bugFixStep = 2;
-                        String hint = currentContext.isEmpty() ? "fix error 2 of 2" : currentContext + "\nfix error 2 of 2";
+                        questionTypeLabel.setText("● BUG_DETECTED — find the next error");
+                        questionTypeLabel.setTextColor(Color.parseColor("#FFFF4444"));
+                        String hint = currentContext.isEmpty() ? "find the next error" : currentContext + "\nfind the next error";
                         annotationText.setText(hint);
+                        bugFixStep = 2;
                     }, 400);
                 }
             } else {
@@ -717,27 +739,15 @@ public class GameActivity extends AppCompatActivity {
                     selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1AFF7B72"), Color.parseColor("#FFFF7B72"), dp(2)));
                     selectedFixChip.setTextColor(Color.parseColor("#FFFF7B72"));
                 }
-                if (isTwoErrorQuestion) {
-                    gameHandler.postDelayed(this::resetBothTokens, 700);
-                } else {
-                    gameHandler.postDelayed(this::resetForRetry, 700);
-                }
+                gameHandler.postDelayed(this::resetForRetry, 700);
             }
-
-        } else if (bugFixStep == 2) {
-            int bug2TappedIdx = (selectedBugToken1Index == errorToken1Index)
-                    ? selectedBugToken2Index : selectedBugToken1Index;
-            TextView bug2Chip = (selectedBugToken1Index == errorToken1Index)
-                    ? selectedBugChip2 : selectedBugChip1;
-            boolean bugCorrect = (bug2TappedIdx == errorToken2Index);
-            boolean fixCorrect = correctOption2.trim().equals(selectedFix.trim());
-
-            if (bugCorrect && fixCorrect) {
+        } else if (bugFixStep == 3) {
+            if (fixCorrect) {
                 correctAnswers++;
                 correctCount.setText(String.valueOf(correctAnswers));
-                if (bug2Chip != null) {
-                    bug2Chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
-                    bug2Chip.setTextColor(Color.parseColor("#FF44FF88"));
+                if (selectedBugChip2 != null) {
+                    selectedBugChip2.setBackground(makeRoundRect(dp(4), Color.parseColor("#1A44FF88"), Color.parseColor("#FF44FF88"), dp(1)));
+                    selectedBugChip2.setTextColor(Color.parseColor("#FF44FF88"));
                 }
                 if (selectedFixChip != null) {
                     selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#FF3FB950"), dp(2)));
@@ -762,38 +772,18 @@ public class GameActivity extends AppCompatActivity {
                     selectedFixChip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1AFF7B72"), Color.parseColor("#FFFF7B72"), dp(2)));
                     selectedFixChip.setTextColor(Color.parseColor("#FFFF7B72"));
                 }
-                gameHandler.postDelayed(this::resetBothTokens, 700);
+                gameHandler.postDelayed(this::resetForRetry, 700);
             }
         }
     }
 
-    private void resetBothTokens() {
-        if (selectedBugChip1 != null) {
-            selectedBugChip1.setBackground(makeTokenDefault());
-            selectedBugChip1.setTextColor(Color.parseColor("#FFC9D1D9"));
-        }
-        if (selectedBugChip2 != null) {
-            selectedBugChip2.setBackground(makeTokenDefault());
-            selectedBugChip2.setTextColor(Color.parseColor("#FFC9D1D9"));
-        }
-        selectedBugToken1Index = -1; selectedBugChip1 = null;
-        selectedBugToken2Index = -1; selectedBugChip2 = null;
-        selectedFix = ""; selectedFixChip = null;
-        bugFixStep = 0;
-        submitBtn.setVisibility(View.GONE);
-        submitBtn.setEnabled(true);
-        optionsHintLabel.setVisibility(View.GONE);
-        optionsContainer.setVisibility(View.GONE);
-        optionsContainer.removeAllViews();
-        questionTypeLabel.setText("● BUG_SCAN");
-        questionTypeLabel.setTextColor(Color.parseColor("#FF8B949E"));
-        String hint = isTwoErrorQuestion ? "→ find 2 errors" : "→ find 1 error";
-        annotationText.setText(currentContext.isEmpty() ? hint : currentContext + "\n" + hint);
-        for (int i = 0; i < codeTokenRow.getChildCount(); i++) {
-            View v = codeTokenRow.getChildAt(i);
-            v.setEnabled(true);
-            v.setClickable(true);
-        }
+    private void flashWrongToken(TextView chip) {
+        chip.setBackground(makeRoundRect(dp(4), Color.parseColor("#33FF8C00"), Color.parseColor("#FFFF8C00"), dp(1)));
+        chip.setTextColor(Color.parseColor("#FFFF8C00"));
+        gameHandler.postDelayed(() -> {
+            chip.setBackground(makeTokenDefault());
+            chip.setTextColor(Color.parseColor("#FFC9D1D9"));
+        }, 500);
     }
 
     private void resetForRetry() {
@@ -836,8 +826,7 @@ public class GameActivity extends AppCompatActivity {
             View v = optionsContainer.getChildAt(i);
             if (v instanceof TextView) {
                 TextView chip = (TextView) v;
-                String correctToReveal = (bugFixStep == 2) ? correctOption2 : correctOption1;
-                if (chip.getText().toString().trim().equals(correctToReveal.trim())) {
+                if (chip.getText().toString().trim().equals(currentStepCorrectOption.trim())) {
                     chip.setBackground(makeRoundRect(dp(8), Color.parseColor("#1A3FB950"), Color.parseColor("#803FB950"), dp(2)));
                     chip.setTextColor(Color.parseColor("#803FB950"));
                 }
@@ -892,7 +881,7 @@ public class GameActivity extends AppCompatActivity {
         selectedBugToken2Index = -1; selectedBugChip2 = null;
         selectedFix = ""; selectedFixChip = null;
         currentMergedTokens = null;
-        qTimer = 180;
+        qTimer = questionTimerStart;
         groundY = gridView.getGroundY();
         charContainer.setY(groundY - charSizePx);
         charContainer.animate().scaleX(1f).scaleY(1f).setDuration(200)
